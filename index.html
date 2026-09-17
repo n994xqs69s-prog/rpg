@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aurils — Gerenciador de Moedas de RPG</title>
+<meta name="description" content="Gerenciador de moedas, tesouro e mercado para campanhas de RPG, em pt-BR.">
+<meta name="theme-color" content="#0d0b12">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="sigil">🪙</span>
+    <div>
+      <h1>Aurils</h1>
+      <p>Tesouro & Economia de Campanha</p>
+    </div>
+  </div>
+  <div class="party-total">
+    <span>Tesouro do grupo</span>
+    <strong id="partyTotal">0 A</strong>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="tab active" data-tab="tesouro">🏆 Tesouro</button>
+  <button class="tab" data-tab="transacoes">📜 Transações</button>
+  <button class="tab" data-tab="mercado">⚖️ Mercado</button>
+  <button class="tab" data-tab="conversor">🔁 Conversor</button>
+  <button class="tab" data-tab="sistema">⚙️ Sistema</button>
+</nav>
+
+<main>
+  <!-- TESOURO -->
+  <section class="panel active" id="tab-tesouro">
+    <div class="card">
+      <h2>Recrutar personagem</h2>
+      <form id="formChar" class="grid">
+        <label class="wide">Nome
+          <input name="nome" placeholder="Ex.: Thalia, a Meia-Elfa" required>
+        </label>
+        <label>Classe
+          <input name="classe" placeholder="Ex.: Ladina">
+        </label>
+        <label>🔵 Platina <input type="number" name="platina" min="0" value="0"></label>
+        <label>🟡 Auril <input type="number" name="auril" min="0" value="0"></label>
+        <label>⚪ Prata <input type="number" name="prata" min="0" value="0"></label>
+        <label>🟤 Copo <input type="number" name="copo" min="0" value="0"></label>
+        <button class="primary wide" type="submit">Recrutar</button>
+      </form>
+    </div>
+    <div id="charList" class="char-list"></div>
+  </section>
+
+  <!-- TRANSAÇÕES -->
+  <section class="panel" id="tab-transacoes">
+    <div class="card">
+      <h2>Registrar transação</h2>
+      <form id="formTx" class="grid">
+        <label class="wide">Personagem
+          <select name="charId" id="txChar" required></select>
+        </label>
+        <label>Tipo
+          <select name="tipo">
+            <option value="ganho">💰 Ganho</option>
+            <option value="gasto">🔥 Gasto</option>
+          </select>
+        </label>
+        <label>Quantidade
+          <input type="number" name="qtd" min="0" step="0.01" value="1" required>
+        </label>
+        <label>Moeda
+          <select name="moeda" id="txMoeda"></select>
+        </label>
+        <label class="wide">Descrição
+          <input name="desc" placeholder="Ex.: recompensa pelo lobo branco">
+        </label>
+        <button class="primary wide" type="submit">Registrar</button>
+      </form>
+    </div>
+    <div class="card">
+      <h2>Histórico</h2>
+      <div id="txList" class="tx-list"></div>
+    </div>
+  </section>
+
+  <!-- MERCADO -->
+  <section class="panel" id="tab-mercado">
+    <div class="card row-between">
+      <label class="inline">Comprador / Vendedor
+        <select id="mercadoChar"></select>
+      </label>
+      <label class="inline">Buscar
+        <input id="buscaItem" placeholder="poção, espada…">
+      </label>
+    </div>
+    <div id="itemList" class="item-grid"></div>
+    <div class="card">
+      <h2>Adicionar item próprio</h2>
+      <form id="formItem" class="grid">
+        <label class="wide">Nome <input name="nome" required placeholder="Ex.: Amuleto do Corvo"></label>
+        <label>Preço <input type="number" name="preco" min="0" step="0.01" value="1" required></label>
+        <label>Moeda <select name="moeda" id="itemMoeda"></select></label>
+        <label>Categoria
+          <select name="cat">
+            <option>Consumível</option><option>Arma</option><option>Armadura</option>
+            <option>Equipamento</option><option>Montaria</option><option>Serviço</option><option>Tesouro</option>
+          </select>
+        </label>
+        <label>Ícone <input name="icone" maxlength="2" value="✨"></label>
+        <button class="primary wide" type="submit">Adicionar ao mercado</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- CONVERSOR -->
+  <section class="panel" id="tab-conversor">
+    <div class="card">
+      <h2>Conversor ao vivo</h2>
+      <div class="grid">
+        <label>Valor <input type="number" id="convVal" value="1" step="0.01"></label>
+        <label>Moeda <select id="convMoeda"></select></label>
+      </div>
+      <div id="convOut" class="conv-out"></div>
+      <p class="hint">Resultado em moedas inteiras (troco exato): <strong id="convTroco"></strong></p>
+    </div>
+  </section>
+
+  <!-- SISTEMA -->
+  <section class="panel" id="tab-sistema">
+    <div class="card">
+      <h2>Regras da moeda</h2>
+      <table class="rules">
+        <tr><th>Moeda</th><th>Equivalência</th><th>Em aurils</th></tr>
+        <tr><td>🔵 Platina</td><td>1 = 10 aurils</td><td>10 A</td></tr>
+        <tr><td>🟡 Auril <em>(base)</em></td><td>1 = 10 pratas</td><td>1 A</td></tr>
+        <tr><td>⚪ Prata</td><td>1 = 10 copos</td><td>0,10 A</td></tr>
+        <tr><td>🟤 Copo</td><td>moeda menor</td><td>0,01 A</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Backup da campanha</h2>
+      <p class="hint">Leve o tesouro do computador para o celular.</p>
+      <div class="btn-row">
+        <button class="primary" id="btnExport">⬇️ Exportar JSON</button>
+        <button class="ghost" id="btnImport">⬆️ Importar JSON</button>
+        <input type="file" id="fileImport" accept="application/json" hidden>
+      </div>
+    </div>
+    <div class="card danger-card">
+      <h2>Recomeço</h2>
+      <p class="hint">Apaga personagens, transações e itens próprios.</p>
+      <button class="danger" id="btnReset">💀 Recomeçar campanha</button>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
