@@ -1,0 +1,10 @@
+{
+  "name": "aurils",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aurils — gerenciador de moedas e tesouro para campanhas de RPG (pt-BR)",
+  "scripts": {
+    "dev": "python3 -m http.server 3000 --bind 0.0.0.0",
+    "build": "echo \"site estático, nada para compilar\""
+  }
+}
